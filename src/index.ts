@@ -1,3 +1,4 @@
-import { locale } from "./utils";
+import * as p from '@clack/prompts';
+import { locale } from './utils';
 
-console.log(locale);
+p.intro(locale);
