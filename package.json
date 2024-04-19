@@ -1,0 +1,17 @@
+{
+  "name": "create-avif",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsup --watch"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint": "^9.0.0",
+    "tsup": "^8.0.2",
+    "typescript": "^5.4.5"
+  }
+}
