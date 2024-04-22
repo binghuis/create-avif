@@ -11,6 +11,7 @@
   "license": "ISC",
   "devDependencies": {
     "@eslint/js": "^9.0.0",
+    "@types/node": "^20.12.7",
     "eslint": "^8.56.0",
     "prettier": "^3.2.5",
     "prettier-plugin-organize-imports": "^3.2.4",
@@ -19,6 +20,7 @@
     "typescript-eslint": "^7.7.0"
   },
   "dependencies": {
-    "@clack/prompts": "^0.7.0"
+    "@clack/prompts": "^0.7.0",
+    "sharp": "^0.33.3"
   }
 }
