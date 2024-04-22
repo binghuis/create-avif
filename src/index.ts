@@ -2,7 +2,7 @@ import * as p from '@clack/prompts';
 import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
-import { ImageExtensionsEnum } from './types';
+import { ImageExt, ImageExtensionsEnum, ImageSelectOpt } from './types';
 import { isImgFile } from './utils';
 // import { locale } from './utils';
 
@@ -27,12 +27,12 @@ async function main() {
     initialValue: true,
   });
 
-  const imgTypeSelected = await p.multiselect({
+  const imgTypeSelected = await p.multiselect<ImageSelectOpt[], ImageExt>({
     message: '选择你想转换的图片格式',
-    options: Object.keys(ImageExtensionsEnum).map((key) => ({
-      label: key.toLowerCase(),
-      value: key.toLowerCase(),
-    })),
+    options: Object.values(ImageExtensionsEnum).map((val) => ({
+      label: val.slice(1),
+      value: val,
+    })) as ImageSelectOpt[],
   });
 
   const quality = await p.text({
@@ -55,22 +55,29 @@ async function main() {
 
   const outputDir = path.resolve(cwd, output.toString());
 
-  function convert(inputDir: string, outputDir: string) {
+  function convert(inputDir: string) {
     fs.readdirSync(inputDir, { recursive: Boolean(recursive) }).forEach((hier) => {
-      if ((isImgFile(hier.toString()), imgTypeSelected)) {
-        const pipeline = sharp(hier).avif({
-          quality: parseInt(quality.toString()),
-          lossless: false,
-        });
-        pipeline.toFile(outputDir);
-      }
-      if (fs.lstatSync(hier).isDirectory()) {
-        convert(hier.toString(), path.resolve(outputDir, hier.toString()));
+      const input = path.resolve(inputDir, hier.toString());
+      if (fs.lstatSync(input).isDirectory()) {
+        convert(input);
+      } else {
+        if (isImgFile(input, imgTypeSelected as any)) {
+          const pipeline = sharp(input).avif({
+            quality: parseInt(quality.toString()),
+            lossless: false,
+          });
+          let outputFilename = path.basename(input);
+
+          outputFilename = outputFilename.replace(path.extname(input), '.avif');
+          const outputPath = path.join(outputDir ? outputDir : path.dirname(input), outputFilename);
+
+          pipeline.toFile(outputPath);
+        }
       }
     });
   }
 
-  convert(inputDir, outputDir);
+  convert(inputDir);
 }
 
 main();
