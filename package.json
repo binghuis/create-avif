@@ -4,11 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "tsup --watch"
+    "dev": "NODE_ENV=development tsup",
+    "build": "NODE_ENV=production tsup"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@eslint/js": "^9.0.0",
     "@types/node": "^20.12.7",

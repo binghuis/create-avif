@@ -55,8 +55,9 @@ async function main() {
 
   const outputDir = path.resolve(cwd, output.toString());
 
-  function convert(inputDir: string) {
-    fs.readdirSync(inputDir, { recursive: Boolean(recursive) }).forEach((hier) => {
+  async function convert(inputDir: string) {
+    const files = fs.readdirSync(inputDir, { recursive: Boolean(recursive) });
+    for (const hier of files) {
       const input = path.resolve(inputDir, hier.toString());
       if (fs.lstatSync(input).isDirectory()) {
         convert(input);
@@ -70,14 +71,15 @@ async function main() {
           outputFilename = outputFilename.replace(path.extname(input), '.avif');
 
           const outputPath = path.join(outputDir ? outputDir : path.dirname(input), outputFilename);
-          console.log(outputPath);
-          pipeline.toFile(outputPath);
+          await pipeline.toFile(outputPath);
         }
       }
-    });
+    }
   }
-
-  convert(inputDir);
+  const spinner = p.spinner();
+  spinner.start('正在生成 avif 图片');
+  await convert(inputDir);
+  spinner.stop('avif 图片生成完成');
 }
 
 main();
