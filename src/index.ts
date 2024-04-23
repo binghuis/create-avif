@@ -37,8 +37,8 @@ async function main() {
 
   const quality = await p.text({
     message: '生成图片质量',
-    placeholder: '75',
-    initialValue: '75',
+    placeholder: '50',
+    initialValue: '50',
     validate(value) {
       const num = Number(value);
       if (isNaN(num) || num < 1 || num > 100) {
@@ -61,16 +61,16 @@ async function main() {
       if (fs.lstatSync(input).isDirectory()) {
         convert(input);
       } else {
-        if (isImgFile(input, imgTypeSelected as any)) {
+        if (isImgFile(input, imgTypeSelected as ImageExt[])) {
           const pipeline = sharp(input).avif({
             quality: parseInt(quality.toString()),
             lossless: false,
           });
           let outputFilename = path.basename(input);
-
           outputFilename = outputFilename.replace(path.extname(input), '.avif');
-          const outputPath = path.join(outputDir ? outputDir : path.dirname(input), outputFilename);
 
+          const outputPath = path.join(outputDir ? outputDir : path.dirname(input), outputFilename);
+          console.log(outputPath);
           pipeline.toFile(outputPath);
         }
       }
