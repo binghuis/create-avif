@@ -2,14 +2,14 @@ import * as p from '@clack/prompts';
 import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
+import locales from './locales';
 import { ImageExt, ImageExtensionsEnum, ImageSelectOpt } from './types';
 import { isImgFile } from './utils';
-// import { locale } from './utils';
 
 async function main() {
   const defaultInput = './assets';
   const input = await p.text({
-    message: '图片所在目录',
+    message: locales['img-where'],
     placeholder: defaultInput,
     initialValue: defaultInput,
     validate(value) {
