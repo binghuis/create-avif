@@ -4,7 +4,12 @@ import path from 'node:path';
 import sharp from 'sharp';
 import locales from './locales';
 import { ImageExt, ImageExtensionsEnum, ImageSelectOpt } from './types';
-import { isImgFile } from './utils';
+import { isSelectedImage } from './utils';
+
+const cancel = (message?: string) => {
+  p.cancel(message ?? '✖ 已取消');
+  process.exit(0);
+};
 
 async function main() {
   const defaultInput = './assets';
@@ -13,26 +18,30 @@ async function main() {
     placeholder: defaultInput,
     initialValue: defaultInput,
     validate(value) {
-      if (!fs.existsSync(value.toString())) {
+      if (!fs.existsSync(value)) {
         return locales['inputRequire'];
       }
     },
   });
 
   const cwd = process.cwd();
-  const inputDir = path.resolve(cwd, input.toString());
+  const absInput = path.resolve(cwd, input.toString());
 
   const recursive = await p.confirm({
     message: locales['recursive'],
     initialValue: true,
   });
 
+  const imgFormatSelectedOpts = Object.entries(ImageExtensionsEnum).map(([label, value]) => ({
+    label,
+    value,
+  })) as ImageSelectOpt[];
+
   const imgFormatSelected = await p.multiselect<ImageSelectOpt[], ImageExt>({
     message: locales['imgFormat'],
-    options: Object.values(ImageExtensionsEnum).map((val) => ({
-      label: val.slice(1),
-      value: val,
-    })) as ImageSelectOpt[],
+    options: imgFormatSelectedOpts,
+    initialValues: [ImageExtensionsEnum.Jpg, ImageExtensionsEnum.Png, ImageExtensionsEnum.Jpeg],
+    required: true,
   });
 
   const quality = await p.text({
@@ -40,45 +49,35 @@ async function main() {
     placeholder: '50',
     initialValue: '50',
     validate(value) {
-      const num = Number(value);
+      const num = parseInt(value);
       if (isNaN(num) || num < 1 || num > 100) {
         return locales['qualityRange'];
       }
     },
   });
 
-  const output = await p.text({
-    message: locales['output'],
-    placeholder: './output',
-    initialValue: './output',
-  });
-
-  const outputDir = path.resolve(cwd, output.toString());
-
   async function convert(inputDir: string) {
-    const files = fs.readdirSync(inputDir, { recursive: Boolean(recursive) });
-    for (const hier of files) {
-      const input = path.resolve(inputDir, hier.toString());
-      if (fs.lstatSync(input).isDirectory()) {
-        convert(input);
-      } else {
-        if (isImgFile(input, imgFormatSelected as ImageExt[])) {
-          const pipeline = sharp(input).avif({
-            quality: parseInt(quality.toString()),
-            lossless: false,
-          });
-          let outputFilename = path.basename(input);
-          outputFilename = outputFilename.replace(path.extname(input), '.avif');
+    const hiers = fs.readdirSync(inputDir, { recursive: Boolean(recursive) });
+    for (const hier of hiers) {
+      const absHier = path.join(inputDir, hier.toString());
+      if (fs.lstatSync(absHier).isDirectory()) {
+        convert(absHier);
+      } else if (isSelectedImage(absHier, imgFormatSelected as ImageExt[])) {
+        const pipeline = sharp(absHier).avif({
+          quality: parseInt(quality.toString()),
+          lossless: false,
+        });
+        let outputFilename = path.basename(absHier);
+        outputFilename = outputFilename.replace(path.extname(absHier), '.avif');
 
-          const outputPath = path.join(outputDir ? outputDir : path.dirname(input), outputFilename);
-          await pipeline.toFile(outputPath);
-        }
+        const outputPath = path.join(path.dirname(absHier), outputFilename);
+        await pipeline.toFile(outputPath);
       }
     }
   }
   const spinner = p.spinner();
   spinner.start(locales['convertStart']);
-  await convert(inputDir);
+  await convert(absInput);
   spinner.stop(locales['convertEnd']);
 }
 

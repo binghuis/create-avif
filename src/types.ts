@@ -3,9 +3,10 @@ export enum ImageExtensionsEnum {
   Jpeg = '.jpeg',
   Png = '.png',
   Gif = '.gif',
+  Svg = '.svg',
 }
 
-export type ImageFormat = Lowercase<keyof typeof ImageExtensionsEnum>;
+export type ImageFormat = keyof typeof ImageExtensionsEnum;
 
 export type ImageExt = `.${Lowercase<keyof typeof ImageExtensionsEnum>}`;
 
