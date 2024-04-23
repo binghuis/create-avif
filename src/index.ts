@@ -9,12 +9,12 @@ import { isImgFile } from './utils';
 async function main() {
   const defaultInput = './assets';
   const input = await p.text({
-    message: locales['img-where'],
+    message: locales['input'],
     placeholder: defaultInput,
     initialValue: defaultInput,
     validate(value) {
       if (!fs.existsSync(value.toString())) {
-        return '该目录不存在，请选择一个有效目录';
+        return locales['inputRequire'];
       }
     },
   });
@@ -23,12 +23,12 @@ async function main() {
   const inputDir = path.resolve(cwd, input.toString());
 
   const recursive = await p.confirm({
-    message: '是否递归处理子目录',
+    message: locales['recursive'],
     initialValue: true,
   });
 
-  const imgTypeSelected = await p.multiselect<ImageSelectOpt[], ImageExt>({
-    message: '选择你想转换的图片格式',
+  const imgFormatSelected = await p.multiselect<ImageSelectOpt[], ImageExt>({
+    message: locales['imgFormat'],
     options: Object.values(ImageExtensionsEnum).map((val) => ({
       label: val.slice(1),
       value: val,
@@ -36,19 +36,19 @@ async function main() {
   });
 
   const quality = await p.text({
-    message: '生成图片质量',
+    message: locales['quality'],
     placeholder: '50',
     initialValue: '50',
     validate(value) {
       const num = Number(value);
       if (isNaN(num) || num < 1 || num > 100) {
-        return '请输入 1-100 之间的数字';
+        return locales['qualityRange'];
       }
     },
   });
 
   const output = await p.text({
-    message: 'avif 图片生成目录',
+    message: locales['output'],
     placeholder: './output',
     initialValue: './output',
   });
@@ -62,7 +62,7 @@ async function main() {
       if (fs.lstatSync(input).isDirectory()) {
         convert(input);
       } else {
-        if (isImgFile(input, imgTypeSelected as ImageExt[])) {
+        if (isImgFile(input, imgFormatSelected as ImageExt[])) {
           const pipeline = sharp(input).avif({
             quality: parseInt(quality.toString()),
             lossless: false,
@@ -77,9 +77,9 @@ async function main() {
     }
   }
   const spinner = p.spinner();
-  spinner.start('正在生成 avif 图片');
+  spinner.start(locales['convertStart']);
   await convert(inputDir);
-  spinner.stop('avif 图片生成完成');
+  spinner.stop(locales['convertEnd']);
 }
 
 main();

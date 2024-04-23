@@ -5,8 +5,8 @@ export enum ImageExtensionsEnum {
   Gif = '.gif',
 }
 
-export type ImageType = Lowercase<keyof typeof ImageExtensionsEnum>;
+export type ImageFormat = Lowercase<keyof typeof ImageExtensionsEnum>;
 
 export type ImageExt = `.${Lowercase<keyof typeof ImageExtensionsEnum>}`;
 
-export type ImageSelectOpt = { label: ImageType; value: ImageExt };
+export type ImageSelectOpt = { label: ImageFormat; value: ImageExt };
