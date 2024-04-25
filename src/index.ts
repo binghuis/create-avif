@@ -12,12 +12,12 @@ const imgFormatSelectedOpts = Object.entries(ImageExtensionsEnum).map(([label, v
 })) as ImageSelectOpt[];
 
 const cancel = (message?: string) => {
-  p.cancel(message ?? '✖ 已取消');
+  p.cancel(message ?? locales['cancel']);
   process.exit(0);
 };
 
 async function main() {
-  const defaultInput = './assets';
+  const defaultInput = './';
   const options = await p.group(
     {
       input: () =>
@@ -30,11 +30,6 @@ async function main() {
               return locales['inputRequire'];
             }
           },
-        }),
-      recursive: () =>
-        p.confirm({
-          message: locales['recursive'],
-          initialValue: true,
         }),
       imgFormatSelected: () => {
         return p.multiselect<ImageSelectOpt[], ImageExt>({
@@ -49,47 +44,59 @@ async function main() {
         });
       },
       quality: () =>
-        p.text({
+        p.select({
           message: locales['quality'],
-          placeholder: '50',
-          initialValue: '50',
-          validate(value) {
-            const num = parseInt(value);
-            if (isNaN(num) || num < 1 || num > 100) {
-              return locales['qualityRange'];
-            }
-          },
+          options: [
+            { value: 50, label: '50', hint: '⬇️ 90%' },
+            { value: 75, label: '75', hint: '⬇️ 50%' },
+          ],
+          initialValue: 50,
         }),
-      lossless: () =>
+      lossy: () =>
         p.confirm({
-          message: locales['lossless'],
-          initialValue: false,
+          message: locales['lossy'],
+          initialValue: true,
+        }),
+      effort: () =>
+        p.select({
+          message: locales['effort'],
+          options: [
+            { value: 0, label: '0' },
+            { value: 1, label: '1' },
+            { value: 2, label: '2' },
+            { value: 3, label: '3' },
+            { value: 4, label: '4' },
+            { value: 5, label: '5' },
+            { value: 6, label: '6' },
+            { value: 7, label: '7' },
+            { value: 8, label: '8' },
+            { value: 9, label: '9' },
+          ],
+          initialValue: 4,
         }),
     },
     {
-      onCancel: ({ results }) => {
+      onCancel: () => {
         cancel();
       },
     },
   );
-  const { input, imgFormatSelected, recursive, quality, lossless } = options;
+  const { input, imgFormatSelected, quality, lossy, effort } = options;
 
   const cwd = process.cwd();
   const absInput = path.resolve(cwd, input);
 
   async function convert(inputDir: string) {
-    const hiers = fs.readdirSync(inputDir, { recursive });
+    const hiers = fs.readdirSync(inputDir, { recursive: true });
     for (const hier of hiers) {
       const absHier = path.join(inputDir, hier.toString());
       if (fs.lstatSync(absHier).isDirectory()) {
-        if (!recursive) {
-          return;
-        }
         convert(absHier);
       } else if (isSelectedImage(absHier, imgFormatSelected)) {
         const pipeline = sharp(absHier).avif({
-          quality: parseInt(quality),
-          lossless,
+          quality,
+          lossless: !lossy,
+          effort,
         });
         let outputFilename = path.basename(absHier);
         outputFilename = outputFilename.replace(path.extname(absHier), '.avif');
@@ -106,6 +113,5 @@ async function main() {
 }
 
 main().catch((err) => {
-  p.log.error(err);
   process.exit(1);
 });
