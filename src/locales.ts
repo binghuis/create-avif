@@ -9,17 +9,19 @@ interface Locales {
   qualityRange: string;
   convertStart: string;
   convertEnd: string;
+  lossless: string;
 }
 
 const en: Locales = {
   input: 'Directory of the image',
-  inputRequire: 'The directory does not exist. Please select a valid directory',
+  inputRequire: 'The directory does not exist. Please provide a valid path',
   recursive: 'Process subdirectories recursively?',
   imgFormat: 'Select the image format you want to convert to',
   quality: 'Image quality',
   qualityRange: 'Please enter a number between 1 and 100',
   convertStart: 'Start conversion',
-  convertEnd: 'Conversion completed',
+  convertEnd: 'Conversion completed!',
+  lossless: 'Use lossless compression',
 };
 
 const zhCn: Locales = {
@@ -30,7 +32,8 @@ const zhCn: Locales = {
   quality: '生成图片质量',
   qualityRange: '请输入 1-100 之间的数字',
   convertStart: '开始转换',
-  convertEnd: '转换完成',
+  convertEnd: '转换完成！',
+  lossless: '使用无损压缩',
 };
 
 let locales = en;
