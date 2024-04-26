@@ -1,4 +1,5 @@
 import * as p from '@clack/prompts';
+import kleur from 'kleur';
 import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
@@ -22,7 +23,7 @@ async function main() {
     {
       input: () =>
         p.text({
-          message: locales['input'],
+          message: kleur.cyan(locales['input']),
           placeholder: defaultInput,
           initialValue: defaultInput,
           validate(value) {
@@ -33,7 +34,7 @@ async function main() {
         }),
       imgFormatSelected: () => {
         return p.multiselect<ImageSelectOpt[], ImageExt>({
-          message: locales['imgFormat'],
+          message: kleur.cyan(locales['imgFormat']),
           options: imgFormatSelectedOpts,
           initialValues: [
             ImageExtensionsEnum.Jpg,
@@ -45,7 +46,7 @@ async function main() {
       },
       quality: () =>
         p.select({
-          message: locales['quality'],
+          message: kleur.cyan(locales['quality']),
           options: [
             { value: 50, label: '50', hint: '⬇️ 90%' },
             { value: 75, label: '75', hint: '⬇️ 50%' },
@@ -54,12 +55,12 @@ async function main() {
         }),
       lossy: () =>
         p.confirm({
-          message: locales['lossy'],
+          message: kleur.cyan(locales['lossy']),
           initialValue: true,
         }),
       effort: () =>
         p.select({
-          message: locales['effort'],
+          message: kleur.cyan(locales['effort']),
           options: [
             { value: 0, label: '0' },
             { value: 1, label: '1' },
