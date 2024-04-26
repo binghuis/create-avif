@@ -2,13 +2,24 @@
   "name": "create-avif",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "files": [
+    "dist"
+  ],
+  "bin": {
+    "create-avif": "dist/index.js",
+    "avif": "dist/index.js"
+  },
+  "main": "dist/index.js",
   "scripts": {
     "dev": "NODE_ENV=development tsup",
     "build": "NODE_ENV=production tsup"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "cli",
+    "avif",
+    "image"
+  ],
+  "author": "@binghuis（https://github.com/binghuis）",
   "license": "MIT",
   "devDependencies": {
     "@eslint/js": "^9.0.0",
