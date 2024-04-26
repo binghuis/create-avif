@@ -1,7 +1,7 @@
 {
   "name": "create-avif",
-  "version": "1.0.6",
-  "description": "",
+  "version": "1.0.7",
+  "description": "A CLI tool that converts images (jpg, png, svg) to avif format images.",
   "files": [
     "dist"
   ],
