@@ -66,21 +66,20 @@ async function main() {
           initialValue: true,
         }),
       effort: () =>
-        p.select({
+        p.text({
           message: kleur.cyan(locales['effort']),
-          options: [
-            { value: 0, label: '0' },
-            { value: 1, label: '1' },
-            { value: 2, label: '2' },
-            { value: 3, label: '3' },
-            { value: 4, label: '4' },
-            { value: 5, label: '5' },
-            { value: 6, label: '6' },
-            { value: 7, label: '7' },
-            { value: 8, label: '8' },
-            { value: 9, label: '9' },
-          ],
-          initialValue: 4,
+          placeholder: '4',
+          initialValue: '4',
+          validate(value) {
+            try {
+              const num = Number(value);
+              if (!Number.isInteger(num) || num > 9 || num < 0) {
+                return locales['effortRange'];
+              }
+            } catch (error) {
+              return locales['effortRange'];
+            }
+          },
         }),
     },
     {
@@ -101,21 +100,21 @@ async function main() {
     const hiers = await getFiles(inputDir, imgFormatSelected, recursive);
     return hiers.map((hier) => {
       return new Promise<string>((resolve, reject) => {
-        const pipeline = sharp(hier).avif({
+        const pipeline = sharp(hier, { animated: true }).avif({
           quality,
           lossless: !lossy,
-          effort,
+          effort: Number(effort),
         });
         let outputFilename = path.basename(hier);
         outputFilename = outputFilename.replace(path.extname(hier), '.avif');
         const outputPath = path.join(path.dirname(hier), outputFilename);
         pipeline.toFile(outputPath, (err, info) => {
           if (err) {
-            p.log.info(`${kleur.red(hier)}${kleur.red().bold(' (' + err.message + ') ')}`);
+            p.log.error(`${kleur.red(hier)}${kleur.red().bold(' (' + err.message + ') ')}`);
             errorCount++;
             reject(err);
           } else {
-            p.log.info(`${kleur.green(hier)}`);
+            p.log.success(`${kleur.green(hier)}`);
             successCount++;
             resolve('');
           }
@@ -124,14 +123,14 @@ async function main() {
     });
   }
 
-  p.log.step(kleur.magenta(locales['convertStart']));
+  p.log.step(kleur.cyan(locales['convertStart']));
   const promises = await convert(absInput);
 
   await Promise.allSettled(promises);
 
-  p.log.success(kleur.magenta(locales['convertEnd']));
-
-  console.log(successCount, errorCount);
+  p.log.info(
+    `${kleur.cyan(locales['convertEnd'])}\n${kleur.green(locales['success'] + successCount)}\n${kleur.red(locales['failure'] + errorCount)}`,
+  );
 }
 
 main().catch((err) => {
