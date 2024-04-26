@@ -1,10 +1,11 @@
+import { glob } from 'glob';
 import path from 'node:path';
-import { ImageExt, ImageExtensionsEnum } from './types';
-
+import { ImageExt } from './types';
 export const locale = Intl.DateTimeFormat().resolvedOptions().locale;
 
-export function isSelectedImage(filePath: string, exts?: ImageExt[]) {
-  const imageExtensions = exts ? exts : Object.values(ImageExtensionsEnum);
-  const ext = path.extname(filePath).toLowerCase();
-  return imageExtensions.includes(ext as ImageExt);
+export async function getFiles(dir: string, exts: ImageExt[], recursive?: boolean) {
+  const extsString = exts.map((ext) => ext.slice(1)).join(',');
+  const currentDir = `/*.{${extsString}}`;
+  const recursiveDir = `/**/**/*.{${extsString}}`;
+  return await glob(path.join(dir, recursive ? recursiveDir : currentDir));
 }

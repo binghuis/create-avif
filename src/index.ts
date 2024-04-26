@@ -5,7 +5,7 @@ import path from 'node:path';
 import sharp from 'sharp';
 import locales from './locales';
 import { ImageExt, ImageExtensionsEnum, ImageSelectOpt } from './types';
-import { isSelectedImage } from './utils';
+import { getFiles } from './utils';
 
 const imgFormatSelectedOpts = Object.entries(ImageExtensionsEnum).map(([label, value]) => ({
   label,
@@ -96,38 +96,41 @@ async function main() {
 
   let successCount = 0;
   let errorCount = 0;
+
   async function convert(inputDir: string) {
-    const hiers = fs.readdirSync(inputDir);
-    for (const hier of hiers) {
-      const absHier = path.join(inputDir, hier.toString());
-      if (fs.lstatSync(absHier).isDirectory()) {
-        if (!recursive) {
-          return;
-        }
-        convert(absHier);
-      } else if (isSelectedImage(absHier, imgFormatSelected)) {
-        const pipeline = sharp(absHier, { animated: true }).avif({
+    const hiers = await getFiles(inputDir, imgFormatSelected, recursive);
+    return hiers.map((hier) => {
+      return new Promise<string>((resolve, reject) => {
+        const pipeline = sharp(hier).avif({
           quality,
           lossless: !lossy,
           effort,
         });
-        let outputFilename = path.basename(absHier);
-        outputFilename = outputFilename.replace(path.extname(absHier), '.avif');
-        const outputPath = path.join(path.dirname(absHier), outputFilename);
+        let outputFilename = path.basename(hier);
+        outputFilename = outputFilename.replace(path.extname(hier), '.avif');
+        const outputPath = path.join(path.dirname(hier), outputFilename);
         pipeline.toFile(outputPath, (err, info) => {
           if (err) {
-            console.log(`${kleur.red(absHier)}${kleur.red().bold(' (' + err.message + ') ')}`);
+            p.log.info(`${kleur.red(hier)}${kleur.red().bold(' (' + err.message + ') ')}`);
+            errorCount++;
+            reject(err);
           } else {
-            console.log(`${kleur.green(absHier)}`);
+            p.log.info(`${kleur.green(hier)}`);
+            successCount++;
+            resolve('');
           }
         });
-      }
-    }
+      });
+    });
   }
-  const spinner = p.spinner();
-  spinner.start(kleur.magenta(locales['convertStart']));
-  await convert(absInput);
-  spinner.stop(kleur.green(locales['convertEnd']));
+
+  p.log.step(kleur.magenta(locales['convertStart']));
+  const promises = await convert(absInput);
+
+  await Promise.allSettled(promises);
+
+  p.log.success(kleur.magenta(locales['convertEnd']));
+
   console.log(successCount, errorCount);
 }
 
