@@ -42,9 +42,9 @@ async function main() {
           message: kleur.cyan(locales['imgFormat']),
           options: imgFormatSelectedOpts,
           initialValues: [
-            // ImageExtensionsEnum.Jpg,
+            ImageExtensionsEnum.Jpg,
             ImageExtensionsEnum.Png,
-            // ImageExtensionsEnum.Jpeg,
+            ImageExtensionsEnum.Jpeg,
           ],
           required: true,
         });
