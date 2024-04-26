@@ -18,7 +18,7 @@ const cancel = (message?: string) => {
 };
 
 async function main() {
-  const defaultInput = './assets';
+  const defaultInput = '.';
   const options = await p.group(
     {
       input: () =>
