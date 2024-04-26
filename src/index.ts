@@ -18,7 +18,7 @@ const cancel = (message?: string) => {
 };
 
 async function main() {
-  const defaultInput = './assets';
+  const defaultInput = '.';
   const options = await p.group(
     {
       input: () =>
@@ -45,8 +45,6 @@ async function main() {
             ImageExtensionsEnum.Jpg,
             ImageExtensionsEnum.Png,
             ImageExtensionsEnum.Jpeg,
-            ImageExtensionsEnum.Gif,
-            ImageExtensionsEnum.Svg,
           ],
           required: true,
         });
