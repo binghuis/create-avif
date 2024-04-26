@@ -25,8 +25,8 @@ const enUs: Locales = {
   convertEnd: 'Conversion completed 🎉',
   cancel: 'Cancelled',
   recursive: 'Process subdirectories recursively',
-  success: 'Success',
-  failure: 'Failure',
+  success: 'Success: ',
+  failure: 'Failure: ',
   effortRange: 'Please enter an integer between 0 and 9',
 };
 
@@ -41,8 +41,8 @@ const zhCn: Locales = {
   convertEnd: '转换完成 🎉',
   cancel: '已取消',
   recursive: '是否递归处理子目录',
-  success: '成功',
-  failure: '失败',
+  success: '成功：',
+  failure: '失败：',
   effortRange: '请输入 0 - 9 之间的整数',
 };
 
