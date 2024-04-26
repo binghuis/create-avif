@@ -22,6 +22,9 @@ devDependencies:
   eslint:
     specifier: ^8.56.0
     version: 8.57.0
+  fast-glob:
+    specifier: ^3.3.2
+    version: 3.3.2
   glob:
     specifier: ^10.3.12
     version: 10.3.12

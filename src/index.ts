@@ -18,7 +18,7 @@ const cancel = (message?: string) => {
 };
 
 async function main() {
-  const defaultInput = '.';
+  const defaultInput = './assets';
   const options = await p.group(
     {
       input: () =>
@@ -42,9 +42,9 @@ async function main() {
           message: kleur.cyan(locales['imgFormat']),
           options: imgFormatSelectedOpts,
           initialValues: [
-            ImageExtensionsEnum.Jpg,
+            // ImageExtensionsEnum.Jpg,
             ImageExtensionsEnum.Png,
-            ImageExtensionsEnum.Jpeg,
+            // ImageExtensionsEnum.Jpeg,
           ],
           required: true,
         });
@@ -96,6 +96,7 @@ async function main() {
 
   async function convert(inputDir: string) {
     const hiers = await getFiles(inputDir, imgFormatSelected, recursive);
+
     return hiers.map((hier) => {
       return new Promise<string>((resolve, reject) => {
         const pipeline = sharp(hier, { animated: true }).avif({
