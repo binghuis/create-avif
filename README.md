@@ -8,4 +8,4 @@ A CLI tool that converts images (`jpg`, `png`, `svg`) to `avif` format images.
 
 `pnpm create avif`
 
-<img src='https://raw.githubusercontent.com/binghuis/assets/main/create-avif/record.gif' width='450px' />
+<img src='https://raw.githubusercontent.com/binghuis/assets/main/create-avif/record.gif' width='480px' />
