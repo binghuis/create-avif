@@ -18,7 +18,7 @@ const cancel = (message?: string) => {
 };
 
 async function main() {
-  const defaultInput = './';
+  const defaultInput = './assets';
   const options = await p.group(
     {
       input: () =>
@@ -32,6 +32,11 @@ async function main() {
             }
           },
         }),
+      recursive: () =>
+        p.confirm({
+          message: kleur.cyan(locales['recursive']),
+          initialValue: true,
+        }),
       imgFormatSelected: () => {
         return p.multiselect<ImageSelectOpt[], ImageExt>({
           message: kleur.cyan(locales['imgFormat']),
@@ -40,6 +45,8 @@ async function main() {
             ImageExtensionsEnum.Jpg,
             ImageExtensionsEnum.Png,
             ImageExtensionsEnum.Jpeg,
+            ImageExtensionsEnum.Gif,
+            ImageExtensionsEnum.Svg,
           ],
           required: true,
         });
@@ -82,37 +89,49 @@ async function main() {
       },
     },
   );
-  const { input, imgFormatSelected, quality, lossy, effort } = options;
+  const { input, imgFormatSelected, quality, lossy, effort, recursive } = options;
 
   const cwd = process.cwd();
   const absInput = path.resolve(cwd, input);
 
+  let successCount = 0;
+  let errorCount = 0;
   async function convert(inputDir: string) {
-    const hiers = fs.readdirSync(inputDir, { recursive: true });
+    const hiers = fs.readdirSync(inputDir);
     for (const hier of hiers) {
       const absHier = path.join(inputDir, hier.toString());
       if (fs.lstatSync(absHier).isDirectory()) {
+        if (!recursive) {
+          return;
+        }
         convert(absHier);
       } else if (isSelectedImage(absHier, imgFormatSelected)) {
-        const pipeline = sharp(absHier).avif({
+        const pipeline = sharp(absHier, { animated: true }).avif({
           quality,
           lossless: !lossy,
           effort,
         });
         let outputFilename = path.basename(absHier);
         outputFilename = outputFilename.replace(path.extname(absHier), '.avif');
-
         const outputPath = path.join(path.dirname(absHier), outputFilename);
-        await pipeline.toFile(outputPath);
+        pipeline.toFile(outputPath, (err, info) => {
+          if (err) {
+            console.log(`${kleur.red(absHier)}${kleur.red().bold(' (' + err.message + ') ')}`);
+          } else {
+            console.log(`${kleur.green(absHier)}`);
+          }
+        });
       }
     }
   }
   const spinner = p.spinner();
-  spinner.start(locales['convertStart']);
+  spinner.start(kleur.magenta(locales['convertStart']));
   await convert(absInput);
-  spinner.stop(locales['convertEnd']);
+  spinner.stop(kleur.green(locales['convertEnd']));
+  console.log(successCount, errorCount);
 }
 
 main().catch((err) => {
+  console.log(kleur.bgRed(err));
   process.exit(1);
 });

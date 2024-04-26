@@ -10,19 +10,20 @@ interface Locales {
   lossy: string;
   effort: string;
   cancel: string;
+  recursive: string;
 }
 
-const en: Locales = {
+const enUs: Locales = {
   input: 'Directory of the image',
   inputRequire: 'The directory does not exist. Please provide a valid path',
   imgFormat: 'Select the image format you want to convert to',
   quality: 'Image quality',
   lossy: 'Use lossy compression',
-  effort:
-    'Compression effort (Higher effort results in slower processing but higher compression rate)',
+  effort: 'Compression ratio (higher compression ratio results in slower processing speed)',
   convertStart: 'Start conversion',
   convertEnd: 'Conversion completed!',
-  cancel: 'Canceled',
+  cancel: 'Cancelled',
+  recursive: 'Process subdirectories recursively',
 };
 
 const zhCn: Locales = {
@@ -35,9 +36,10 @@ const zhCn: Locales = {
   convertStart: '开始转换',
   convertEnd: '转换完成！',
   cancel: '已取消',
+  recursive: '是否递归处理子目录',
 };
 
-let locales = en;
+let locales = enUs;
 
 if (locale === 'zh-CN') {
   locales = zhCn;
