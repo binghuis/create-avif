@@ -8,5 +8,7 @@ export async function getFiles(dir: string, exts: ImageExt[], recursive?: boolea
   const extsString = exts.map((ext) => ext.slice(1)).join(',');
   const currentDir = exts.length === 1 ? `/*.${extsString}` : `/*.{${extsString}}`;
   const recursiveDir = exts.length === 1 ? `/**/**/*.${extsString}` : `/**/**/*.{${extsString}}`;
-  return await glob(path.join(dir, recursive ? recursiveDir : currentDir));
+  return await glob(path.join(dir, recursive ? recursiveDir : currentDir), {
+    ignore: ['**/node_modules/**'],
+  });
 }

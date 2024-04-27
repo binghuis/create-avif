@@ -1,3 +1,5 @@
+#! /usr/bin/env node
+
 import * as p from '@clack/prompts';
 import kleur from 'kleur';
 import fs from 'node:fs';
