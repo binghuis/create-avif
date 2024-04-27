@@ -1,5 +1,3 @@
-import { locale } from './utils';
-
 interface Locales {
   input: string;
   inputRequire: string;
@@ -50,8 +48,8 @@ const zhCn: Locales = {
 
 let locales = enUs;
 
-if (locale === 'zh-CN') {
-  locales = zhCn;
-}
+// if (locale === 'zh-CN') {
+//   locales = zhCn;
+// }
 
 export default locales;
