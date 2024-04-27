@@ -135,6 +135,6 @@ async function main() {
 }
 
 main().catch((err) => {
-  console.log(kleur.bgRed(err));
+  p.log.error(kleur.red(err.message));
   process.exit(1);
 });
