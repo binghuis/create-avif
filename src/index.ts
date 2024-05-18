@@ -55,10 +55,23 @@ async function main() {
         p.select({
           message: kleur.cyan(locales['quality']),
           options: [
-            { value: 50, label: '50', hint: '⬇️ 90%' },
-            { value: 75, label: '75', hint: '⬇️ 50%' },
+            { value: 50, label: '50', hint: locales['less90'] },
+            { value: 75, label: '75', hint: locales['less50'] },
           ],
           initialValue: 50,
+        }),
+      ignore: () =>
+        p.text({
+          message: kleur.cyan(locales['ignore']),
+          placeholder: '10',
+          initialValue: '10',
+          validate(value) {
+            try {
+              Number(value);
+            } catch (error) {
+              return locales['validNumber'];
+            }
+          },
         }),
       lossy: () =>
         p.confirm({
@@ -101,6 +114,9 @@ async function main() {
 
     return hiers.map((hier) => {
       return new Promise<string>((resolve, reject) => {
+        if (fs.statSync(hier).size < Number(options.ignore) * 1024) {
+          return resolve('');
+        }
         const pipeline = sharp(hier, { animated: true }).avif({
           quality,
           lossless: !lossy,

@@ -14,6 +14,10 @@ interface Locales {
   recursive: string;
   success: string;
   failure: string;
+  less90: string;
+  less50: string;
+  ignore: string;
+  validNumber: string;
 }
 
 const enUs: Locales = {
@@ -30,6 +34,10 @@ const enUs: Locales = {
   success: 'Success: ',
   failure: 'Failure: ',
   effortRange: 'Please enter an integer between 0 and 9',
+  less50: 'Image size expected to decrease by 50%',
+  less90: 'Image size expected to decrease by 90%',
+  ignore: 'Images smaller than the input value will be ignored. Enter 0 to convert all (unit: KB)',
+  validNumber: 'Please enter a valid number',
 };
 
 const zhCn: Locales = {
@@ -46,6 +54,10 @@ const zhCn: Locales = {
   success: '成功：',
   failure: '失败：',
   effortRange: '请输入 0 - 9 之间的整数',
+  less50: '图片大小预计减少 50%',
+  less90: '图片大小预计减少 90%',
+  ignore: '小于输入值大小的图片将被忽略，输入 0 则全部转换（单位为 KB）',
+  validNumber: '请输入有效数字',
 };
 
 let locales = enUs;
