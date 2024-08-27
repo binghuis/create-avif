@@ -1,13 +1,19 @@
 #! /usr/bin/env node
 
 import * as p from '@clack/prompts';
+import { program } from 'commander';
 import kleur from 'kleur';
 import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
+import pkg from '../package.json';
 import locales from './locales';
 import { ImageExt, ImageExtensionsEnum, ImageSelectOpt } from './types';
 import { getFiles } from './utils';
+
+program.name(pkg.name).description(pkg.description).version(pkg.version);
+
+program.parse();
 
 const imgFormatSelectedOpts = Object.entries(ImageExtensionsEnum).map(([label, value]) => ({
   label,
